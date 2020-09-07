@@ -3,13 +3,18 @@ import InfiniteScroll from 'react-infinite-scroller';
 
 class BoardList extends Component {
 
-    handleLoadMore = (page) => {
-
-    }
     render() {
         return (
             <div>
-                BoardList
+                <InfiniteScroll
+                    pageStart={0}
+                    loadMore={this.handleLoadMore}
+                    hasMore={true || false}
+                    loader={<div className="loader" key={0}>Loading...</div>}
+                    userWindow={false}
+                >
+                    tttt
+                </InfiniteScroll>
             </div>
         );
     }

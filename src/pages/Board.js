@@ -6,11 +6,12 @@ import { Route } from 'react-router-dom';
 
 import { BoardList } from 'containers/Board';
 
-class Home extends Component {
+class Board extends Component {
     render() {
         return (
             <div>
-                home
+                <Route path="/board/boardList" component={BoardList} />
+
             </div>
         );
     }
@@ -22,4 +23,4 @@ export default connect(
     (dispatch) => ({
         BaseActions: bindActionCreators(baseActions, dispatch)
     })
-)(Home);
+)(Board);

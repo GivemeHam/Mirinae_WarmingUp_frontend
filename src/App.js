@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
-import { Home, Login } from './pages';
+import { Home, Auth, Board } from './pages';
 
 class App extends Component {
   render() {
     return (
       <div>
         <Route exact path="/" component={Home} />
-        <Route path="/Login" component={Login} />
+        <Route path="/Auth" component={Auth} />
+        <Route path="/Board" component={Board} />
       </div >
     );
   }

@@ -3,14 +3,16 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as baseActions from 'redux/modules/base';
 import { Route } from 'react-router-dom';
-
+import { Login, Register } from 'containers/Auth';
 import { BoardList } from 'containers/Board';
 
-class Home extends Component {
+class Auth extends Component {
     render() {
         return (
             <div>
-                home
+                <Route path="/auth/login" component={Login} />
+                <Route path="/auth/register" component={Register} />
+                <Route path="/auth/test" component={BoardList} />
             </div>
         );
     }
@@ -22,4 +24,4 @@ export default connect(
     (dispatch) => ({
         BaseActions: bindActionCreators(baseActions, dispatch)
     })
-)(Home);
+)(Auth);
