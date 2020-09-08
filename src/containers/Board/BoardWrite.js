@@ -52,12 +52,9 @@ class BoardWrite extends Component {
 
     handleBoardRegister = async (e) => {
         const { form, BoardActions, error, history } = this.props;
-        console.log(this.props);
         const { title, writer, contents } = form.toJS();
-        console.log("1");
 
         const { validate } = this;
-        console.log("2");
 
         if (error) return;
         //제목, 글이 입력되었는지
@@ -102,6 +99,7 @@ class BoardWrite extends Component {
                     onChange={handleChange}
                 />
                 <Button variant="contained" color="primary" onClick={this.handleBoardRegister}>등록</Button>
+                <Button variant="contained" color="primary" to="/board/boardList">목록</Button>
             </div>
         );
     }

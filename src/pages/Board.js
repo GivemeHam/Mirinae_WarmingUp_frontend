@@ -12,7 +12,6 @@ class Board extends Component {
             <div>
                 <Route path="/board/boardList" component={BoardList} />
                 <Route path="/board/boardWrite" component={BoardWrite} />
-
             </div>
         );
     }

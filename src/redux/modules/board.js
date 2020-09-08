@@ -37,6 +37,7 @@ const initialState = Map({
     reusult: Map({})
 });
 
+
 //리듀서
 export default handleActions({
     [CHANGE_INPUT]: (state, action) => {
@@ -50,6 +51,12 @@ export default handleActions({
     ...pender({
         type: BOARD_REGISTER,
         onSuccess: (state, action) => state.set('result', Map(action.payload.data))
+    }),
+    ...pender({
+        type: BOARD_LIST,
+        onSuccess: (state, action) => {
+            state.set('result', Map(action.payload.data))
+        }
     }),
     [SET_ERROR]: (state, action) => {
         const { form, message } = action.payload;
