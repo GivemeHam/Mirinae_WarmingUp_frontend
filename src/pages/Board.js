@@ -4,13 +4,14 @@ import { bindActionCreators } from 'redux';
 import * as baseActions from 'redux/modules/base';
 import { Route } from 'react-router-dom';
 
-import { BoardList } from 'containers/Board';
+import { BoardList, BoardWrite } from 'containers/Board';
 
 class Board extends Component {
     render() {
         return (
             <div>
                 <Route path="/board/boardList" component={BoardList} />
+                <Route path="/board/boardWrite" component={BoardWrite} />
 
             </div>
         );
