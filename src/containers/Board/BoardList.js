@@ -3,9 +3,15 @@ import InfiniteScroll from 'react-infinite-scroller';
 
 class BoardList extends Component {
 
+    componentWillMount() {
+        //        Api.get('/api/board/boardList')
+        //            .then(response => this.setState({ transactions: response.data }));
+    }
     render() {
+        const { transactions } = this.props;
         return (
             <div>
+                {transactions}
                 <InfiniteScroll
                     pageStart={0}
                     loadMore={this.handleLoadMore}

@@ -4,19 +4,25 @@ import { Map } from 'immutable';
 import * as BoardAPI from 'lib/board';
 
 //액션 타입
-const CHANGE_INPUT = 'auth/CHANGE_INPUT';   //인풋값 변경
+const CHANGE_INPUT = 'board/CHANGE_INPUT';   //인풋값 변경
+
 const INITIALIZE_FORM = 'board/INITIALIZE_FORM';
 const BOARD_REGISTER = 'board/BOARD_REGISTER';
+const BOARD_LIST = 'board/BOARD_LIST'
 
 const SET_ERROR = 'board/SET_ERROR';
+
 
 //액션 생성 함수
 export const changeInput = createAction(CHANGE_INPUT); //form,name,value
 
 export const initializeForm = createAction(INITIALIZE_FORM);
 export const boardRegister = createAction(BOARD_REGISTER, BoardAPI.boardRegister);
+export const boardList = createAction(BOARD_LIST, BoardAPI.boardList);
 
 export const setError = createAction(SET_ERROR);
+
+
 
 //리듀서 초기값
 const initialState = Map({
