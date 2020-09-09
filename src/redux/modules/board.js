@@ -52,12 +52,9 @@ export default handleActions({
         type: BOARD_REGISTER,
         onSuccess: (state, action) => state.set('result', Map(action.payload.data))
     }),
-    ...pender({
-        type: BOARD_LIST,
-        onSuccess: (state, action) => {
-            state.set('result', Map(action.payload.data))
-        }
-    }),
+    [BOARD_LIST]: (state, action) => {
+        return state.set('result', Map(action.payload.data))
+    },
     [SET_ERROR]: (state, action) => {
         const { form, message } = action.payload;
         return state.setIn([form, 'error'], message);

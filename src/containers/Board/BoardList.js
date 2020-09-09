@@ -3,29 +3,101 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import InfiniteScroll from 'react-infinite-scroller';
 import * as boardActions from 'redux/modules/board';
+import storage from '../../lib/storage';
+import axios from 'axios';
+
+const api = {
+    baseUrl: 'http://localhost:4000'
+};
 
 class BoardList extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            tracks: [],
+            hasMoreItems: true,
+            nextHref: null
+        };
+    }
+
 
     componentWillMount() {
-        //this.props = boardActions.boardList();
+        boardActions.boardList();
+    }
+
+    loadItems(page) {
+        var self = this;
+
+        var url = api.baseUrl + '/api/board/boardList';
+        if (this.state.nextHref) {
+            url = this.state.nextHref;
+        }
+        axios.get(url, {
+            //  linked_partitioning: 1,
+            //   page_size: 10
+        }, {
+            cache: true
+        })
+            .then(function (response) {
+                if (response) {
+                    var tracks = self.state.tracks;
+
+                    //console.log(tracks);
+
+                    response.data.map((track, i) => {
+                        if (track.artwork_url == null) {
+                            track.artwork_url = '/board/boardView/' + track['_id'];
+                            //console.log(track);
+                        }
+                        // console.log(track.artwork_url);
+                        tracks.push(track);
+                    });
+
+                    if (response.next_href) {
+                        self.setState({
+                            tracks: tracks,
+                            nextHref: response.next_href
+                        });
+                    } else {
+                        self.setState({
+                            hasMoreItems: false
+                        });
+                    }
+                }
+            });
     }
     render() {
+        const loader = <div className="loader">Loading ...</div>;
 
-        console.log(this.props);
-        const { form } = this.props;
-        const { title, writer, contents } = form.toJS();
+        let items = [];
+        console.log(this.state);
+        this.state.tracks.map((track, i) => {
+            items.push(
+                <div className="track" key={i}>
+                    <a href={track.artwork_url} target="_blank">
+                        {track.title} / {track.writer} / {track.createAt}
+                    </a>
+                </div>
+            );
+        });
+        //let data = storage.get("boardList");
+        //console.log(data.length);
+
 
         return (
             <div>
-
+                제목 / 작성자 / 작성날짜
                 <InfiniteScroll
                     pageStart={0}
-                    loadMore={this.handleLoadMore}
+                    loadMore={this.loadItems.bind(this)}
                     hasMore={true || false}
-                    loader={<div className="loader" key={0}>Loading...</div>}
+                    loader={loader}
                     userWindow={false}
                 >
-                    {title} / {writer} / {contents}
+                    <div className="tracks">
+                        {items}
+                    </div>
                 </InfiniteScroll>
             </div>
         );
