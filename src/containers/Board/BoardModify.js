@@ -2,8 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as boardActions from 'redux/modules/board';
+import axios from 'axios';
+import storage from '../../lib/storage';
 
-import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core';
+import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow, TableCell, Icon } from '@material-ui/core';
+import Board from '../../pages/Board';
+
 
 //import { RichTextEditor } from 'components/Board';
 
@@ -12,6 +16,8 @@ class BoardModify extends Component {
     componentWillMount() {
         const { BoardActions } = this.props;
         BoardActions.initializeForm('register');
+
+
     }
 
     setError = (message) => {
@@ -51,28 +57,35 @@ class BoardModify extends Component {
         });
     }
 
-    handleBoardModify = async (e) => {
-        const { form, BoardActions, error, history } = this.props;
-        const { title, writer, contents } = form.toJS();
+    handleBoardModify = async (params_id, params_title, params_contents) => {
+        const { form, error, history } = this.props;
 
+        console.log(form);
+        let { id, title, contents } = form.toJS();
         const { validate } = this;
-
         if (error) return;
         //제목, 글이 입력되었는지
-        console.log(validate['title'](title) + " // " + validate['contents'](contents));
-        if (!validate['title'](title) || !validate['contents'](contents)) {
-            return;
+        console.log(title);
+        if (!validate['title'](title)) {
+            title = params_title;
+            //return;
+        }
+        if (!validate['contents'](contents)) {
+            contents = params_contents;
+            //return;
         }
         try {
-            console.log("log : " + title + writer + contents);
-            await BoardActions.boardModify({
-                id, title, writer, contents
-            })
+            await axios.patch(`http://localhost:4000/api/board/boardUpdate/${params_id}`, { title, contents })
+                .then(res => {
+
+                })
+
             history.push('/board/boardList');
         } catch (e) {
-            if (e.responce.status === 400) {
+            console.log("e : " + e);
+            /*if (e.res.status === 400) {
                 return this.setError('400 error');
-            }
+            }*/
             this.setError('알 수 없는 에러가 발생했습니다.');
         }
     }
@@ -80,16 +93,25 @@ class BoardModify extends Component {
     render() {
         const { handleChange } = this;
         const { params } = this.props.match;  //파라미터 받아오기
+
+        console.log(params);
         return (
             <div>
                 <Paper>
                     <Table>
-                        <TableHead>글 작성</TableHead>
+                        <TableHead>글 수정</TableHead>
                         <TableBody>
                             <TableRow>
                                 <TextField
+                                    name="id"
+                                    type="hidden"
+                                    value={params.id}>
+
+                                </TextField>
+                                <TextField
                                     name="title"
                                     label="제목"
+                                    defaultValue={params.title}
                                     onChange={handleChange}
 
                                 />
@@ -100,13 +122,13 @@ class BoardModify extends Component {
                                     label="내용"
                                     multiline
                                     rows={10}
-                                    placeholder="내용을 입력해주세요."
+                                    defaultValue={params.contents}
                                     onChange={handleChange}
                                 />
                             </TableRow>
                             <TableRow>
 
-                                <Button variant="contained" color="primary" onClick={this.handleBoardModify}>등록</Button>
+                                <Button variant="contained" color="primary" onClick={() => this.handleBoardModify(`${params.id}`, `${params.title}`, `${params.contents}`)}>수정</Button>
                                 <Button variant=" contained" color="primary" href="/board/boardList">목록</Button>
 
                             </TableRow>

@@ -77,7 +77,10 @@ class BoardList extends Component {
     }
     modifyBoard = (id, title, contents, event) => {
         event.preventDefault();
-        window.location = `/board/boardModify/:id/:title/:contents`;
+        storage.set("modify_id", id);
+        storage.set("modify_title", title);
+        storage.set("modify_contents", contents);
+        window.location = `/board/boardModify/${id}/${title}/${contents}`;
 
     }
     state = { redirect: null };

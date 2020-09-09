@@ -32,6 +32,7 @@ export const setError = createAction(SET_ERROR);
 const initialState = Map({
     register: Map({
         form: Map({
+            id: '',
             title: '',
             writer: 'guest',
             contents: ''
@@ -40,6 +41,7 @@ const initialState = Map({
     }),
     reusult: Map({})
 });
+
 
 
 //리듀서
