@@ -7,7 +7,7 @@ import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow, TableC
 
 //import { RichTextEditor } from 'components/Board';
 
-class BoardWrite extends Component {
+class BoardModify extends Component {
 
     componentWillMount() {
         const { BoardActions } = this.props;
@@ -51,7 +51,7 @@ class BoardWrite extends Component {
         });
     }
 
-    handleBoardRegister = async (e) => {
+    handleBoardModify = async (e) => {
         const { form, BoardActions, error, history } = this.props;
         const { title, writer, contents } = form.toJS();
 
@@ -65,8 +65,8 @@ class BoardWrite extends Component {
         }
         try {
             console.log("log : " + title + writer + contents);
-            await BoardActions.boardRegister({
-                title, writer, contents
+            await BoardActions.boardModify({
+                id, title, writer, contents
             })
             history.push('/board/boardList');
         } catch (e) {
@@ -79,7 +79,7 @@ class BoardWrite extends Component {
 
     render() {
         const { handleChange } = this;
-
+        const { params } = this.props.match;  //파라미터 받아오기
         return (
             <div>
                 <Paper>
@@ -106,7 +106,7 @@ class BoardWrite extends Component {
                             </TableRow>
                             <TableRow>
 
-                                <Button variant="contained" color="primary" onClick={this.handleBoardRegister}>등록</Button>
+                                <Button variant="contained" color="primary" onClick={this.handleBoardModify}>등록</Button>
                                 <Button variant=" contained" color="primary" href="/board/boardList">목록</Button>
 
                             </TableRow>
@@ -128,4 +128,4 @@ export default connect(
     (dispatch) => ({
         BoardActions: bindActionCreators(boardActions, dispatch)
     })
-)(BoardWrite);
+)(BoardModify);

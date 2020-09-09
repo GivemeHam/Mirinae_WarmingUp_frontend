@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import * as baseActions from 'redux/modules/base';
 import { Route } from 'react-router-dom';
 
-import { BoardList, BoardWrite } from 'containers/Board';
+import { BoardList, BoardWrite, BoardView } from 'containers/Board';
 
 class Board extends Component {
     render() {
@@ -12,6 +12,7 @@ class Board extends Component {
             <div>
                 <Route path="/board/boardList" component={BoardList} />
                 <Route path="/board/boardWrite" component={BoardWrite} />
+                <Route path="/board/boardView" component={BoardView} />
             </div>
         );
     }

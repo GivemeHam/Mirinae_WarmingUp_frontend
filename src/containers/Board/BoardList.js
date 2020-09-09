@@ -5,10 +5,12 @@ import InfiniteScroll from 'react-infinite-scroller';
 import * as boardActions from 'redux/modules/board';
 import storage from '../../lib/storage';
 import axios from 'axios';
-
+import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core';
+import { Redirect } from 'react-router-dom';
 const api = {
     baseUrl: 'http://localhost:4000'
 };
+
 
 class BoardList extends Component {
     constructor(props) {
@@ -23,7 +25,7 @@ class BoardList extends Component {
 
 
     componentWillMount() {
-        boardActions.boardList();
+        //    boardActions.boardList();
     }
 
     loadItems(page) {
@@ -35,7 +37,7 @@ class BoardList extends Component {
         }
         axios.get(url, {
             //  linked_partitioning: 1,
-            //   page_size: 10
+            page_size: 3
         }, {
             cache: true
         })
@@ -43,14 +45,11 @@ class BoardList extends Component {
                 if (response) {
                     var tracks = self.state.tracks;
 
-                    //console.log(tracks);
-
                     response.data.map((track, i) => {
+                        track.board_id = track['_id'];
                         if (track.artwork_url == null) {
                             track.artwork_url = '/board/boardView/' + track['_id'];
-                            //console.log(track);
                         }
-                        // console.log(track.artwork_url);
                         tracks.push(track);
                     });
 
@@ -67,17 +66,52 @@ class BoardList extends Component {
                 }
             });
     }
+
+    deleteBoard = (id, event) => {
+        event.preventDefault();
+        console.log("test : " + id);
+        axios.delete(`http://localhost:4000/api/board/boardDelete/` + id)
+            .then(res => {
+                this.setState({ redirect: "/board/boardList" });
+            })
+    }
+    modifyBoard = (id, title, contents, event) => {
+        event.preventDefault();
+        window.location = `/board/boardModify/:id/:title/:contents`;
+
+    }
+    state = { redirect: null };
     render() {
+        if (this.state.redirect) {
+            return <Redirect to={this.state.redirect} />
+        }
         const loader = <div className="loader">Loading ...</div>;
 
         let items = [];
-        console.log(this.state);
         this.state.tracks.map((track, i) => {
             items.push(
-                <div className="track" key={i}>
-                    <a href={track.artwork_url} target="_blank">
-                        {track.title} / {track.writer} / {track.createAt}
-                    </a>
+                <div><TableCell>
+                    <TableRow className="tracks">
+                        <TableCell>No.{i}</TableCell>
+                        <TableCell>{track.title}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>작성자 : {track.writer}</TableCell>
+                        <TableCell>작성날짜 : {track.createAt}</TableCell>
+
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>내용</TableCell>
+                        <TableCell>{track.contents}</TableCell>
+                    </TableRow>
+                </TableCell>
+                    <TableCell>
+                        <TableRow>
+                            <Button variant="contained" color="primary" onClick={(e) => this.modifyBoard(track.board_id, track.title, track.contents, e)}>수정</Button>
+                            <Button variant="contained" color="primary" onClick={(e) => this.deleteBoard(track.board_id, e)}>삭제</Button>
+                        </TableRow>
+                    </TableCell>
+                    <hr size="5px" />
                 </div>
             );
         });
@@ -87,18 +121,30 @@ class BoardList extends Component {
 
         return (
             <div>
-                제목 / 작성자 / 작성날짜
-                <InfiniteScroll
-                    pageStart={0}
-                    loadMore={this.loadItems.bind(this)}
-                    hasMore={true || false}
-                    loader={loader}
-                    userWindow={false}
-                >
-                    <div className="tracks">
-                        {items}
-                    </div>
-                </InfiniteScroll>
+                <Paper>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>List</TableCell>
+                                <TableCell>
+                                    <Button variant="contained" color="primary" href="/board/boardWrite">작성</Button>
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            <InfiniteScroll
+                                pageStart={0}
+                                loadMore={this.loadItems.bind(this)}
+                                hasMore={true || false}
+                                loader={loader}
+                                userWindow={false}
+                                threshold={10}
+                            >
+                                {items}
+                            </InfiniteScroll>
+                        </TableBody>
+                    </Table>
+                </Paper>
             </div>
         );
     }

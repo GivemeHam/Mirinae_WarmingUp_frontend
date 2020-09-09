@@ -8,3 +8,8 @@ export const boardList = () => {
         //console.log(response.data)
     });
 };
+export const boardView = () => {
+    axios.get('/api/board/boardView').then(response => {
+        storage.set('boardView', response.data);
+    });
+};

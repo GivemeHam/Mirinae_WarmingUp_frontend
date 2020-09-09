@@ -8,7 +8,9 @@ const CHANGE_INPUT = 'board/CHANGE_INPUT';   //인풋값 변경
 
 const INITIALIZE_FORM = 'board/INITIALIZE_FORM';
 const BOARD_REGISTER = 'board/BOARD_REGISTER';
-const BOARD_LIST = 'board/BOARD_LIST'
+const BOARD_LIST = 'board/BOARD_LIST';
+const BOARD_VIEW = 'board/BOARD_VIEW';
+//const BOARD_DELETE = 'board/BOARD_DELETE';
 
 const SET_ERROR = 'board/SET_ERROR';
 
@@ -19,6 +21,8 @@ export const changeInput = createAction(CHANGE_INPUT); //form,name,value
 export const initializeForm = createAction(INITIALIZE_FORM);
 export const boardRegister = createAction(BOARD_REGISTER, BoardAPI.boardRegister);
 export const boardList = createAction(BOARD_LIST, BoardAPI.boardList);
+export const boardView = createAction(BOARD_VIEW, BoardAPI.boardView);
+//export const boardDelete = createAction(BOARD_DELETE, BoardAPI.boardDelete);
 
 export const setError = createAction(SET_ERROR);
 
