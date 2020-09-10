@@ -9,6 +9,8 @@ import MUIRichTextEditor from 'mui-rte';
 import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow, TableCell, Icon } from '@material-ui/core';
 import Board from '../../pages/Board';
 
+import { EditorState, convertFromRaw } from "draft-js";
+
 class BoardModify extends Component {
 
     componentWillMount() {
@@ -107,8 +109,16 @@ class BoardModify extends Component {
 
         storage.set("params_id", params.id);
         storage.set("params_title", params.title);
+        const contents = storage.get("modify_contents")
 
-        console.log(params);
+        console.log("contents data " + contents);
+
+
+        const contentState = convertFromRaw(contents);
+        const editorState = EditorState.createWithContent(contentState);
+        console.log("zzzz");
+        console.log(contents);
+
         return (
             <div>
                 <Paper>
@@ -134,12 +144,13 @@ class BoardModify extends Component {
                                 <MUIRichTextEditor
                                     id="contents"
                                     label="Type something here..."
-                                    value={params.cotents}
+                                    defaultValue={JSON.stringify(contents)}
                                     onSave={this.save}
                                     inlineToolbar={true}
 
-
                                 >
+
+
                                 </MUIRichTextEditor>
                             </TableRow>
                             <br />
