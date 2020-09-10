@@ -3,14 +3,27 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as boardActions from 'redux/modules/board';
 import MUIRichTextEditor from 'mui-rte';
-import InvertColorsIcon from '@material-ui/icons/InvertColors'
 import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles'
 
-let ctnt_data;
-const save = (data) => {
-    console.log(data);
-    ctnt_data = data;
-};
+const defaultTheme = createMuiTheme()
+
+Object.assign(defaultTheme, {
+    overrides: {
+        MUIRichTextEditor: {
+            root: {
+                marginTop: 20,
+                width: "80%"
+            },
+            editor: {
+                height: "200px",
+                //borderBottom: "1px solid gray"
+            }
+        }
+    }
+})
+
+
 
 class BoardWrite extends Component {
 
@@ -26,6 +39,12 @@ class BoardWrite extends Component {
             message
         });
     }
+
+    saveContents = (data) => {
+        console.log(data);
+        this.handleBoardRegister(data);
+
+    };
 
     validate = {
         title: (value) => {
@@ -49,6 +68,7 @@ class BoardWrite extends Component {
         const { BoardActions } = this.props;
         const { name, value } = e.target;
 
+        console.log(value);
         BoardActions.changeInput({
             name,
             value,
@@ -56,27 +76,34 @@ class BoardWrite extends Component {
         });
     }
 
-    handleBoardRegister = async (e) => {
+    handleBoardRegister = async (ctnt_data, e) => {
         const { form, BoardActions, error, history } = this.props;
         const { title, writer } = form.toJS();
 
         const contents = ctnt_data;
-        console.log(contents);
+        console.log(this.props);
 
         const { validate } = this;
 
         if (error) return;
         //제목, 글이 입력되었는지
         console.log(validate['title'](title) + " // " + validate['contents'](contents));
-        if (!validate['title'](title) || !validate['contents'](contents)) {
+        if (!validate['title'](title)) {
+            alert("제목입력해주세요.")
             return;
         }
+        if (!validate['contents'](contents)) {
+            alert("저장눌러주세요.");
+            return;
+        }
+        //editorState.getCurrentContent()
         try {
             console.log("log : " + title + writer + contents);
             await BoardActions.boardRegister({
                 title, writer, contents
             })
-            history.push('/board/boardList');
+            //history.push('/board/boardList');
+            window.location.replace("/board/boardList");
         } catch (e) {
             if (e.responce.status === 400) {
                 return this.setError('400 error');
@@ -103,19 +130,22 @@ class BoardWrite extends Component {
                                 />
                             </TableRow>
                             <TableRow>
-                                <MUIRichTextEditor
-                                    id="contents"
-                                    label="Type something here..."
-                                    onSave={save}
-                                    inlineToolbar={true}
+                                <MuiThemeProvider theme={defaultTheme}>
 
-                                >
-                                </MUIRichTextEditor>
+                                    <MUIRichTextEditor
+                                        id="contents"
+                                        label="Type something here..."
+                                        onSave={this.saveContents}
+                                        inlineToolbar={true}
+
+
+                                    >
+
+                                    </MUIRichTextEditor>
+                                </MuiThemeProvider>
                             </TableRow>
-                            <br />
-                            <br />
                             <TableRow>
-                                <Button variant="contained" color="primary" onClick={this.handleBoardRegister}>등록</Button>
+                                {/*<Button variant="contained" color="primary" onClick={this.handleBoardRegister}>등록</Button>*/}
                                 <Button variant=" contained" color="primary" href="/board/boardList">목록</Button>
 
                             </TableRow>

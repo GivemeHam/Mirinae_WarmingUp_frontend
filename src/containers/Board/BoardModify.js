@@ -4,12 +4,10 @@ import { bindActionCreators } from 'redux';
 import * as boardActions from 'redux/modules/board';
 import axios from 'axios';
 import storage from '../../lib/storage';
+import MUIRichTextEditor from 'mui-rte';
 
 import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow, TableCell, Icon } from '@material-ui/core';
 import Board from '../../pages/Board';
-
-
-//import { RichTextEditor } from 'components/Board';
 
 class BoardModify extends Component {
 
@@ -57,25 +55,39 @@ class BoardModify extends Component {
         });
     }
 
-    handleBoardModify = async (params_id, params_title, params_contents) => {
-        const { form, error, history } = this.props;
 
-        console.log(form);
-        let { id, title, contents } = form.toJS();
+    save = (data) => {
+        console.log(data);
+        const id = storage.get("params_id");
+        const title = storage.get("params_title");
+
+        this.handleBoardModify(id, title, data);
+
+    };
+
+    handleBoardModify = async (id, title, ctnt_data) => {
+        const { form, error, history } = this.props;
+        //let { id, title } = form.toJS();
+        const contents = ctnt_data;
         const { validate } = this;
+
+
+
         if (error) return;
         //제목, 글이 입력되었는지
         console.log(title);
         if (!validate['title'](title)) {
-            title = params_title;
+            //title = params_title;
             //return;
         }
         if (!validate['contents'](contents)) {
-            contents = params_contents;
+
+            alert("저장눌러주세요.");
+            return;
             //return;
         }
         try {
-            await axios.patch(`http://localhost:4000/api/board/boardUpdate/${params_id}`, { title, contents })
+            await axios.patch(`http://localhost:4000/api/board/boardUpdate/${id}`, { title, contents })
                 .then(res => {
 
                 })
@@ -89,10 +101,12 @@ class BoardModify extends Component {
             this.setError('알 수 없는 에러가 발생했습니다.');
         }
     }
-
     render() {
         const { handleChange } = this;
         const { params } = this.props.match;  //파라미터 받아오기
+
+        storage.set("params_id", params.id);
+        storage.set("params_title", params.title);
 
         console.log(params);
         return (
@@ -117,18 +131,22 @@ class BoardModify extends Component {
                                 />
                             </TableRow>
                             <TableRow>
-                                <TextField
-                                    name="contents"
-                                    label="내용"
-                                    multiline
-                                    rows={10}
-                                    defaultValue={params.contents}
-                                    onChange={handleChange}
-                                />
+                                <MUIRichTextEditor
+                                    id="contents"
+                                    label="Type something here..."
+                                    value={params.cotents}
+                                    onSave={this.save}
+                                    inlineToolbar={true}
+
+
+                                >
+                                </MUIRichTextEditor>
                             </TableRow>
+                            <br />
+                            <br />
                             <TableRow>
 
-                                <Button variant="contained" color="primary" onClick={() => this.handleBoardModify(`${params.id}`, `${params.title}`, `${params.contents}`)}>수정</Button>
+                                {/*<Button variant="contained" color="primary" onClick={() => this.handleBoardModify(`${params.id}`, `${params.title}`, `${params.contents}`)}>수정</Button>*/}
                                 <Button variant=" contained" color="primary" href="/board/boardList">목록</Button>
 
                             </TableRow>

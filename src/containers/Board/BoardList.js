@@ -33,12 +33,22 @@ class BoardList extends Component {
     }
 
     loadItems(page) {
+        if (!this.state.hasMoreItems) return;
         var self = this;
+        console.log(page);  //1,2,3,4,5,6,7
 
-        var url = api.baseUrl + '/api/board/boardList';
+        let limit_value = 5;                //몇개 출력
+        let skip_value = limit_value * page;  //몇개 스킵
+
+        var url = api.baseUrl + `/api/board/findBoardForInfiniteScroll/0/${limit_value}`;
+
+        let next_url = `/api/board/findBoardForInfiniteScroll/${skip_value}/${limit_value}`;
+
         if (this.state.nextHref) {
             url = this.state.nextHref;
+            console.log(url);
         }
+
         axios.get(url, {
             //  linked_partitioning: 1,
             page_size: 3
@@ -46,21 +56,24 @@ class BoardList extends Component {
             cache: true
         })
             .then(function (response) {
+                console.log(response);
                 if (response) {
+                    console.log();
                     var tracks = self.state.tracks;
 
                     response.data.map((track, i) => {
                         track.board_id = track['_id'];
-                        if (track.artwork_url == null) {
-                            track.artwork_url = '/board/boardView/' + track['_id'];
-                        }
+                        // if (track.artwork_url == null) {
+                        //     track.artwork_url = '/board/boardView/' + track['_id'];
+                        // }
                         tracks.push(track);
                     });
 
-                    if (response.next_href) {
+                    //if (response.next_href) {
+                    if (response.data.length != 0) {
                         self.setState({
                             tracks: tracks,
-                            nextHref: response.next_href
+                            nextHref: next_url
                         });
                     } else {
                         self.setState({
@@ -76,7 +89,9 @@ class BoardList extends Component {
         console.log("test : " + id);
         axios.delete(`http://localhost:4000/api/board/boardDelete/` + id)
             .then(res => {
-                this.setState({ redirect: "/board/boardList" });
+                //this.setState({ redirect: "/board/boardList" });
+
+                window.location.replace("/board/boardList");
             })
     }
     modifyBoard = (id, title, contents, event) => {
@@ -97,10 +112,11 @@ class BoardList extends Component {
         let items = [];
         this.state.tracks.map((track, i) => {
             const parsed_data = JSON.parse(track.contents);
-            console.log(parsed_data);
             const contentState = convertFromRaw(parsed_data);
-            console.log(contentState);
             const editorState = EditorState.createWithContent(contentState);
+
+            let DateForm = track.createAt;
+            console.log(DateForm);
             items.push(
                 <div><TableCell>
                     <TableRow className="tracks">
