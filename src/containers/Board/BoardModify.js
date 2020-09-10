@@ -6,10 +6,7 @@ import axios from 'axios';
 import storage from '../../lib/storage';
 import MUIRichTextEditor from 'mui-rte';
 
-import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow, TableCell, Icon } from '@material-ui/core';
-import Board from '../../pages/Board';
-
-import { EditorState, convertFromRaw } from "draft-js";
+import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow } from '@material-ui/core';
 
 class BoardModify extends Component {
 
@@ -59,7 +56,6 @@ class BoardModify extends Component {
 
 
     save = (data) => {
-        console.log(data);
         const id = storage.get("params_id");
         const title = storage.get("params_title");
 
@@ -68,7 +64,7 @@ class BoardModify extends Component {
     };
 
     handleBoardModify = async (id, title, ctnt_data) => {
-        const { form, error, history } = this.props;
+        const { error, history } = this.props;
         //let { id, title } = form.toJS();
         const contents = ctnt_data;
         const { validate } = this;
@@ -77,7 +73,6 @@ class BoardModify extends Component {
 
         if (error) return;
         //제목, 글이 입력되었는지
-        console.log(title);
         if (!validate['title'](title)) {
             //title = params_title;
             //return;
@@ -96,7 +91,6 @@ class BoardModify extends Component {
 
             history.push('/board/boardList');
         } catch (e) {
-            console.log("e : " + e);
             /*if (e.res.status === 400) {
                 return this.setError('400 error');
             }*/
@@ -105,19 +99,11 @@ class BoardModify extends Component {
     }
     render() {
         const { handleChange } = this;
-        const { params } = this.props.match;  //파라미터 받아오기
+        //const { params } = this.props.match;  //파라미터 받아오기
 
-        storage.set("params_id", params.id);
-        storage.set("params_title", params.title);
+        storage.set("params_id", storage.get("modify_id"));
+        storage.set("params_title", storage.get("modify_title"));
         const contents = storage.get("modify_contents")
-
-        console.log("contents data " + contents);
-
-
-        const contentState = convertFromRaw(contents);
-        const editorState = EditorState.createWithContent(contentState);
-        console.log("zzzz");
-        console.log(contents);
 
         return (
             <div>
@@ -129,13 +115,13 @@ class BoardModify extends Component {
                                 <TextField
                                     name="id"
                                     type="hidden"
-                                    value={params.id}>
+                                    value={storage.get("modify_id")}>
 
                                 </TextField>
                                 <TextField
                                     name="title"
                                     label="제목"
-                                    defaultValue={params.title}
+                                    defaultValue={storage.get("modify_title")}
                                     onChange={handleChange}
 
                                 />
@@ -143,7 +129,6 @@ class BoardModify extends Component {
                             <TableRow>
                                 <MUIRichTextEditor
                                     id="contents"
-                                    label="Type something here..."
                                     defaultValue={JSON.stringify(contents)}
                                     onSave={this.save}
                                     inlineToolbar={true}

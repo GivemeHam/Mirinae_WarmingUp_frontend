@@ -5,15 +5,15 @@ import InfiniteScroll from 'react-infinite-scroller';
 import * as boardActions from 'redux/modules/board';
 import storage from '../../lib/storage';
 import axios from 'axios';
-import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core';
+import { Button, Paper, Table, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core';
 import { Redirect } from 'react-router-dom';
+import MUIRichTextEditor from 'mui-rte';
 
-//read draft
-import { Editor, EditorState, convertFromRaw } from "draft-js";
 
 const api = {
     baseUrl: 'http://localhost:4000'
 };
+let loader = <div className="loader">Loading ...</div>;
 
 
 class BoardList extends Component {
@@ -35,7 +35,6 @@ class BoardList extends Component {
     loadItems(page) {
         if (!this.state.hasMoreItems) return;
         var self = this;
-        console.log(page);  //1,2,3,4,5,6,7
 
         let limit_value = 5;                //몇개 출력
         let skip_value = limit_value * page;  //몇개 스킵
@@ -46,7 +45,6 @@ class BoardList extends Component {
 
         if (this.state.nextHref) {
             url = this.state.nextHref;
-            console.log(url);
         }
 
         axios.get(url, {
@@ -56,26 +54,21 @@ class BoardList extends Component {
             cache: true
         })
             .then(function (response) {
-                console.log(response);
                 if (response) {
-                    console.log();
                     var tracks = self.state.tracks;
 
                     response.data.map((track, i) => {
                         track.board_id = track['_id'];
-                        // if (track.artwork_url == null) {
-                        //     track.artwork_url = '/board/boardView/' + track['_id'];
-                        // }
                         tracks.push(track);
                     });
 
-                    //if (response.next_href) {
-                    if (response.data.length != 0) {
+                    if (response.data.length !== 0) {
                         self.setState({
                             tracks: tracks,
                             nextHref: next_url
                         });
                     } else {
+                        loader = <div>끝</div>;
                         self.setState({
                             hasMoreItems: false
                         });
@@ -86,7 +79,6 @@ class BoardList extends Component {
 
     deleteBoard = (id, event) => {
         event.preventDefault();
-        console.log("test : " + id);
         axios.delete(`http://localhost:4000/api/board/boardDelete/` + id)
             .then(res => {
                 //this.setState({ redirect: "/board/boardList" });
@@ -99,7 +91,7 @@ class BoardList extends Component {
         storage.set("modify_id", id);
         storage.set("modify_title", title);
         storage.set("modify_contents", contents);
-        window.location = `/board/boardModify/${id}/${title}/${contents}`;
+        window.location = `/board/boardModify`;
 
     }
     state = { redirect: null };
@@ -107,16 +99,11 @@ class BoardList extends Component {
         if (this.state.redirect) {
             return <Redirect to={this.state.redirect} />
         }
-        const loader = <div className="loader">Loading ...</div>;
 
         let items = [];
         this.state.tracks.map((track, i) => {
             const parsed_data = JSON.parse(track.contents);
-            const contentState = convertFromRaw(parsed_data);
-            const editorState = EditorState.createWithContent(contentState);
 
-            let DateForm = track.createAt;
-            console.log(DateForm);
             items.push(
                 <div><TableCell>
                     <TableRow className="tracks">
@@ -131,9 +118,23 @@ class BoardList extends Component {
                     <TableRow>
                         <TableCell>내용</TableCell>
                         <TableCell>
-                            <Editor
-                                editorState={editorState}
+                            <MUIRichTextEditor
+                                id="contents"
+                                defaultValue={JSON.stringify(parsed_data)}
+                                onSave={this.saveContents}
+                                inlineToolbar={true}
                                 readOnly={true}
+                                controls={["my-style"]}
+                                customControls={[
+                                    {
+                                        name: "my-style",
+                                        type: "inline",
+                                        inlineStyle: {
+                                            backgroundColor: "black",
+                                            color: "white"
+                                        }
+                                    }
+                                ]}
                             />
                         </TableCell>
                     </TableRow>

@@ -13,7 +13,7 @@ class Board extends Component {
                 <Route path="/board/boardList" component={BoardList} />
                 <Route path="/board/boardWrite" component={BoardWrite} />
                 <Route path="/board/boardView" component={BoardView} />
-                <Route path="/board/boardModify/:id/:title/:contents" component={BoardModify} />
+                <Route path="/board/boardModify" component={BoardModify} />
             </div>
         );
     }

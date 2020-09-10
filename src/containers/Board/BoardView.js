@@ -9,7 +9,6 @@ class BoardView extends Component {
 
     render() {
         const { params } = this.props.match;
-        console.log(params);
         return (
             <div>
 

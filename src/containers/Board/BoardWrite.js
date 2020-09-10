@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as boardActions from 'redux/modules/board';
 import MUIRichTextEditor from 'mui-rte';
-import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core';
+import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow } from '@material-ui/core';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles'
 
 const defaultTheme = createMuiTheme()
@@ -41,7 +41,6 @@ class BoardWrite extends Component {
     }
 
     saveContents = (data) => {
-        console.log(data);
         this.handleBoardRegister(data);
 
     };
@@ -68,7 +67,6 @@ class BoardWrite extends Component {
         const { BoardActions } = this.props;
         const { name, value } = e.target;
 
-        console.log(value);
         BoardActions.changeInput({
             name,
             value,
@@ -77,17 +75,15 @@ class BoardWrite extends Component {
     }
 
     handleBoardRegister = async (ctnt_data, e) => {
-        const { form, BoardActions, error, history } = this.props;
+        const { form, BoardActions, error } = this.props;
         const { title, writer } = form.toJS();
 
         const contents = ctnt_data;
-        console.log(this.props);
 
         const { validate } = this;
 
         if (error) return;
         //제목, 글이 입력되었는지
-        console.log(validate['title'](title) + " // " + validate['contents'](contents));
         if (!validate['title'](title)) {
             alert("제목입력해주세요.")
             return;
@@ -98,7 +94,6 @@ class BoardWrite extends Component {
         }
         //editorState.getCurrentContent()
         try {
-            console.log("log : " + title + writer + contents);
             await BoardActions.boardRegister({
                 title, writer, contents
             })
