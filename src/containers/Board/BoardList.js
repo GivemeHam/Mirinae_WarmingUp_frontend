@@ -7,6 +7,10 @@ import storage from '../../lib/storage';
 import axios from 'axios';
 import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core';
 import { Redirect } from 'react-router-dom';
+
+//read draft
+import { Editor, EditorState, convertFromRaw } from "draft-js";
+
 const api = {
     baseUrl: 'http://localhost:4000'
 };
@@ -92,6 +96,11 @@ class BoardList extends Component {
 
         let items = [];
         this.state.tracks.map((track, i) => {
+            const parsed_data = JSON.parse(track.contents);
+            console.log(parsed_data);
+            const contentState = convertFromRaw(parsed_data);
+            console.log(contentState);
+            const editorState = EditorState.createWithContent(contentState);
             items.push(
                 <div><TableCell>
                     <TableRow className="tracks">
@@ -105,7 +114,12 @@ class BoardList extends Component {
                     </TableRow>
                     <TableRow>
                         <TableCell>내용</TableCell>
-                        <TableCell>{track.contents}</TableCell>
+                        <TableCell>
+                            <Editor
+                                editorState={editorState}
+                                readOnly={true}
+                            />
+                        </TableCell>
                     </TableRow>
                 </TableCell>
                     <TableCell>

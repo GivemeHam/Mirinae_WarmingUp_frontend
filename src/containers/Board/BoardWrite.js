@@ -2,10 +2,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as boardActions from 'redux/modules/board';
-
+import MUIRichTextEditor from 'mui-rte';
+import InvertColorsIcon from '@material-ui/icons/InvertColors'
 import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core';
 
-//import { RichTextEditor } from 'components/Board';
+let ctnt_data;
+const save = (data) => {
+    console.log(data);
+    ctnt_data = data;
+};
 
 class BoardWrite extends Component {
 
@@ -53,7 +58,10 @@ class BoardWrite extends Component {
 
     handleBoardRegister = async (e) => {
         const { form, BoardActions, error, history } = this.props;
-        const { title, writer, contents } = form.toJS();
+        const { title, writer } = form.toJS();
+
+        const contents = ctnt_data;
+        console.log(contents);
 
         const { validate } = this;
 
@@ -95,17 +103,18 @@ class BoardWrite extends Component {
                                 />
                             </TableRow>
                             <TableRow>
-                                <TextField
-                                    name="contents"
-                                    label="내용"
-                                    multiline
-                                    rows={10}
-                                    placeholder="내용을 입력해주세요."
-                                    onChange={handleChange}
-                                />
-                            </TableRow>
-                            <TableRow>
+                                <MUIRichTextEditor
+                                    id="contents"
+                                    label="Type something here..."
+                                    onSave={save}
+                                    inlineToolbar={true}
 
+                                >
+                                </MUIRichTextEditor>
+                            </TableRow>
+                            <br />
+                            <br />
+                            <TableRow>
                                 <Button variant="contained" color="primary" onClick={this.handleBoardRegister}>등록</Button>
                                 <Button variant=" contained" color="primary" href="/board/boardList">목록</Button>
 
