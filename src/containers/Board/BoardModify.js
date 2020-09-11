@@ -15,7 +15,7 @@ class BoardModify extends Component {
         const { BoardActions } = this.props;
         BoardActions.initializeForm('register');
 
-
+        storage.set("title_data", storage.get("modify_title"));
     }
 
     setError = (message) => {
@@ -70,13 +70,13 @@ class BoardModify extends Component {
         //let { title } = form.toJS();
 
 
-        const id = storage.get("params_id");
+        const id = storage.get("modify_id");
         const title = storage.get("title_data");
         const contents = JSON.stringify(storage.get("ctnt_data"));
         const { validate } = this;
 
+        console.log(id + "////" + title + "////" + contents);
 
-        console.log(title);
 
         if (error) return;
         //제목, 글이 입력되었는지
@@ -93,10 +93,11 @@ class BoardModify extends Component {
         try {
             await axios.patch(`http://localhost:4000/api/board/boardUpdate/${id}`, { title, contents })
                 .then(res => {
-
+                    console.log("success" + res);
                 })
 
-            history.push('/board/boardList');
+            //  history.push('/board/boardList');
+            //window.location.replace("/board/boardList");
         } catch (e) {
             /*if (e.res.status === 400) {
                 return this.setError('400 error');
@@ -109,7 +110,6 @@ class BoardModify extends Component {
         //const { params } = this.props.match;  //파라미터 받아오기
 
         const contents = storage.get("modify_contents");
-
         const handleChangeContents = editorState => {
             storage.set("ctnt_data", convertToRaw(editorState.getCurrentContent()));
             console.log(convertToRaw(editorState.getCurrentContent()));
