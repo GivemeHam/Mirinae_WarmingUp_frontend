@@ -9,6 +9,8 @@ import { Button, Paper, Table, TableHead, TableBody, TableRow, TableCell } from 
 import { Redirect } from 'react-router-dom';
 import MUIRichTextEditor from 'mui-rte';
 
+//sample
+import { Container, Box } from '@material-ui/core';
 
 const api = {
     baseUrl: 'http://localhost:4000'
@@ -105,47 +107,49 @@ class BoardList extends Component {
             const parsed_data = JSON.parse(track.contents);
 
             items.push(
-                <div><TableCell>
-                    <TableRow className="tracks">
-                        <TableCell>No.{i}</TableCell>
-                        <TableCell>{track.title}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>작성자 : {track.writer}</TableCell>
-                        <TableCell>작성날짜 : {track.createAt}</TableCell>
-
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>내용</TableCell>
+                <div>
+                    <Box bgcolor="" p={1} border={1} borderRadius={16} marginTop={2}>
                         <TableCell>
-                            <MUIRichTextEditor
-                                id="contents"
-                                defaultValue={JSON.stringify(parsed_data)}
-                                onSave={this.saveContents}
-                                inlineToolbar={true}
-                                readOnly={true}
-                                controls={["my-style"]}
-                                customControls={[
-                                    {
-                                        name: "my-style",
-                                        type: "inline",
-                                        inlineStyle: {
-                                            backgroundColor: "black",
-                                            color: "white"
-                                        }
-                                    }
-                                ]}
-                            />
+                            <TableRow className="tracks">
+                                <TableCell>No.{i + 1}</TableCell>
+                                <TableCell>{track.title}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>작성자 : {track.writer}</TableCell>
+                                <TableCell>작성날짜 : {track.createAt}</TableCell>
+
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>내용</TableCell>
+                                <TableCell>
+                                    <MUIRichTextEditor
+                                        id="contents"
+                                        defaultValue={JSON.stringify(parsed_data)}
+                                        onSave={this.saveContents}
+                                        inlineToolbar={true}
+                                        readOnly={true}
+                                        controls={["my-style"]}
+                                        customControls={[
+                                            {
+                                                name: "my-style",
+                                                type: "inline",
+                                                inlineStyle: {
+                                                    backgroundColor: "black",
+                                                    color: "white"
+                                                }
+                                            }
+                                        ]}
+                                    />
+                                </TableCell>
+                            </TableRow>
                         </TableCell>
-                    </TableRow>
-                </TableCell>
-                    <TableCell>
-                        <TableRow>
-                            <Button variant="contained" color="primary" onClick={(e) => this.modifyBoard(track.board_id, track.title, track.contents, e)}>수정</Button>
-                            <Button variant="contained" color="primary" onClick={(e) => this.deleteBoard(track.board_id, e)}>삭제</Button>
-                        </TableRow>
-                    </TableCell>
-                    <hr size="5px" />
+                        <TableCell>
+                            <TableRow>
+                                <Button variant="outlined" color="primary" onClick={(e) => this.modifyBoard(track.board_id, track.title, track.contents, e)}>수정</Button>
+                                <Button variant="outlined" color="secondary" onClick={(e) => this.deleteBoard(track.board_id, e)}>삭제</Button>
+                            </TableRow>
+                        </TableCell>
+                    </Box>
                 </div>
             );
         });
@@ -155,30 +159,34 @@ class BoardList extends Component {
 
         return (
             <div>
-                <Paper>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>List</TableCell>
-                                <TableCell>
-                                    <Button variant="contained" color="primary" href="/board/boardWrite">작성</Button>
-                                </TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            <InfiniteScroll
-                                pageStart={0}
-                                loadMore={this.loadItems.bind(this)}
-                                hasMore={true || false}
-                                loader={loader}
-                                userWindow={false}
-                                threshold={10}
-                            >
-                                {items}
-                            </InfiniteScroll>
-                        </TableBody>
-                    </Table>
-                </Paper>
+                <Container bgcolor="palevioletred">
+                    <Paper>
+                        <Table>
+                            <TableHead>
+                                <Box border={2}>
+                                    <TableRow>
+                                        <TableCell>List</TableCell>
+                                        <TableCell>
+                                            <Button variant="contained" color="primary" href="/board/boardWrite">작성</Button>
+                                        </TableCell>
+                                    </TableRow>
+                                </Box>
+                            </TableHead>
+                            <TableBody>
+                                <InfiniteScroll
+                                    pageStart={0}
+                                    loadMore={this.loadItems.bind(this)}
+                                    hasMore={true || false}
+                                    loader={loader}
+                                    userWindow={false}
+                                    threshold={10}
+                                >
+                                    {items}
+                                </InfiniteScroll>
+                            </TableBody>
+                        </Table>
+                    </Paper>
+                </Container>
             </div>
         );
     }

@@ -4,7 +4,12 @@ import { bindActionCreators } from 'redux';
 import * as boardActions from 'redux/modules/board';
 import MUIRichTextEditor from 'mui-rte';
 import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow } from '@material-ui/core';
+
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles'
+import { convertToRaw } from 'draft-js';
+import storage from '../../lib/storage';
+//sample
+import { Container, Box } from '@material-ui/core';
 
 const defaultTheme = createMuiTheme()
 
@@ -74,11 +79,13 @@ class BoardWrite extends Component {
         });
     }
 
-    handleBoardRegister = async (ctnt_data, e) => {
+    handleBoardRegister = async (e) => {
         const { form, BoardActions, error } = this.props;
         const { title, writer } = form.toJS();
 
-        const contents = ctnt_data;
+        const contents = JSON.stringify(storage.get("ctnt_data"));
+
+        console.log(contents);
 
         const { validate } = this;
 
@@ -107,47 +114,57 @@ class BoardWrite extends Component {
         }
     }
 
+
     render() {
         const { handleChange } = this;
+        const handleChangeContents = editorState => {
+            storage.set("ctnt_data", convertToRaw(editorState.getCurrentContent()));
+            console.log(convertToRaw(editorState.getCurrentContent()));
+        }
 
         return (
             <div>
-                <Paper>
-                    <Table>
-                        <TableHead>글 작성</TableHead>
-                        <TableBody>
-                            <TableRow>
-                                <TextField
-                                    name="title"
-                                    label="제목"
-                                    onChange={handleChange}
 
-                                />
-                            </TableRow>
-                            <TableRow>
-                                <MuiThemeProvider theme={defaultTheme}>
+                <Box bgcolor="" p={1} border={1} borderRadius={16} margin={2} border={2}>
+                    <Paper>
+                        <Table>
+                            <TableHead>글 작성</TableHead>
+                            <TableBody>
+                                <TableRow>
+                                    <TextField
+                                        name="title"
+                                        label="제목"
+                                        onChange={handleChange}
 
-                                    <MUIRichTextEditor
-                                        id="contents"
-                                        label="Type something here..."
-                                        onSave={this.saveContents}
-                                        inlineToolbar={true}
+                                    />
+                                </TableRow>
+                                <TableRow>
+                                    <MuiThemeProvider theme={defaultTheme}>
+
+                                        <MUIRichTextEditor
+
+                                            id="contents"
+                                            label="Type something here..."
+                                            //onSave={this.saveContents}
+                                            onChange={handleChangeContents}
+                                            inlineToolbar={true}
 
 
-                                    >
+                                        >
 
-                                    </MUIRichTextEditor>
-                                </MuiThemeProvider>
-                            </TableRow>
-                            <TableRow>
-                                {/*<Button variant="contained" color="primary" onClick={this.handleBoardRegister}>등록</Button>*/}
-                                <Button variant=" contained" color="primary" href="/board/boardList">목록</Button>
+                                        </MUIRichTextEditor>
+                                    </MuiThemeProvider>
+                                </TableRow>
+                                <TableRow>
+                                    <Button variant="contained" color="primary" onClick={this.handleBoardRegister}>등록</Button>
+                                    <Button variant="outlined" color="primary" href="/board/boardList">목록</Button>
 
-                            </TableRow>
-                        </TableBody>
+                                </TableRow>
+                            </TableBody>
 
-                    </Table>
-                </Paper>
+                        </Table>
+                    </Paper>
+                </Box>
             </div >
         );
     }

@@ -5,8 +5,9 @@ import * as boardActions from 'redux/modules/board';
 import axios from 'axios';
 import storage from '../../lib/storage';
 import MUIRichTextEditor from 'mui-rte';
+import { convertToRaw } from 'draft-js';
 
-import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow } from '@material-ui/core';
+import { TextField, Button, Paper, Table, TableHead, TableBody, TableRow, Box } from '@material-ui/core';
 
 class BoardModify extends Component {
 
@@ -46,6 +47,9 @@ class BoardModify extends Component {
     handleChange = (e) => {
         const { BoardActions } = this.props;
         const { name, value } = e.target;
+        console.log(value);
+
+        storage.set("title_data", value);
 
         BoardActions.changeInput({
             name,
@@ -56,20 +60,23 @@ class BoardModify extends Component {
 
 
     save = (data) => {
-        const id = storage.get("params_id");
-        const title = storage.get("params_title");
 
-        this.handleBoardModify(id, title, data);
+        //this.handleBoardModify(id, title, data);
 
     };
 
-    handleBoardModify = async (id, title, ctnt_data) => {
+    handleBoardModify = async () => {
         const { error, history } = this.props;
-        //let { id, title } = form.toJS();
-        const contents = ctnt_data;
+        //let { title } = form.toJS();
+
+
+        const id = storage.get("params_id");
+        const title = storage.get("title_data");
+        const contents = JSON.stringify(storage.get("ctnt_data"));
         const { validate } = this;
 
 
+        console.log(title);
 
         if (error) return;
         //제목, 글이 입력되었는지
@@ -101,55 +108,62 @@ class BoardModify extends Component {
         const { handleChange } = this;
         //const { params } = this.props.match;  //파라미터 받아오기
 
-        storage.set("params_id", storage.get("modify_id"));
-        storage.set("params_title", storage.get("modify_title"));
-        const contents = storage.get("modify_contents")
+        const contents = storage.get("modify_contents");
+
+        const handleChangeContents = editorState => {
+            storage.set("ctnt_data", convertToRaw(editorState.getCurrentContent()));
+            console.log(convertToRaw(editorState.getCurrentContent()));
+        }
 
         return (
             <div>
-                <Paper>
-                    <Table>
-                        <TableHead>글 수정</TableHead>
-                        <TableBody>
-                            <TableRow>
-                                <TextField
-                                    name="id"
-                                    type="hidden"
-                                    value={storage.get("modify_id")}>
 
-                                </TextField>
-                                <TextField
-                                    name="title"
-                                    label="제목"
-                                    defaultValue={storage.get("modify_title")}
-                                    onChange={handleChange}
+                <Box bgcolor="" p={1} border={1} borderRadius={16} margin={2} border={2}>
+                    <Paper>
+                        <Table>
+                            <TableHead>글 수정</TableHead>
+                            <TableBody>
+                                <TableRow>
+                                    <TextField
+                                        name="id"
+                                        type="hidden"
+                                        value={storage.get("modify_id")}>
 
-                                />
-                            </TableRow>
-                            <TableRow>
-                                <MUIRichTextEditor
-                                    id="contents"
-                                    defaultValue={JSON.stringify(contents)}
-                                    onSave={this.save}
-                                    inlineToolbar={true}
+                                    </TextField>
+                                    <TextField
+                                        name="title"
+                                        label="제목"
+                                        defaultValue={storage.get("modify_title")}
+                                        onChange={handleChange}
 
-                                >
+                                    />
+                                </TableRow>
+                                <TableRow>
+                                    <MUIRichTextEditor
+                                        id="contents"
+                                        defaultValue={JSON.stringify(contents)}
+                                        // onSave={this.save}
+                                        inlineToolbar={true}
+                                        onChange={handleChangeContents}
+
+                                    >
 
 
-                                </MUIRichTextEditor>
-                            </TableRow>
-                            <br />
-                            <br />
-                            <TableRow>
+                                    </MUIRichTextEditor>
+                                </TableRow>
+                                <br />
+                                <br />
+                                <TableRow>
 
-                                {/*<Button variant="contained" color="primary" onClick={() => this.handleBoardModify(`${params.id}`, `${params.title}`, `${params.contents}`)}>수정</Button>*/}
-                                <Button variant=" contained" color="primary" href="/board/boardList">목록</Button>
+                                    <Button variant="contained" color="primary" onClick={this.handleBoardModify}>수정</Button>
+                                    <Button variant="outlined" color="primary" href="/board/boardList">목록</Button>
 
-                            </TableRow>
-                        </TableBody>
+                                </TableRow>
+                            </TableBody>
 
-                    </Table>
-                </Paper>
+                        </Table>
+                    </Paper>
+                </Box>
             </div >
         );
     }
