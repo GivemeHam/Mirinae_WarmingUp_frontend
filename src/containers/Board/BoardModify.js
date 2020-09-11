@@ -97,7 +97,7 @@ class BoardModify extends Component {
                 })
 
             //  history.push('/board/boardList');
-            //window.location.replace("/board/boardList");
+            window.location.replace("/board/boardList");
         } catch (e) {
             /*if (e.res.status === 400) {
                 return this.setError('400 error');
